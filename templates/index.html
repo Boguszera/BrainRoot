@@ -4,15 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrainRoot</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 <header>
     <ul class="menu">
-        <li><a href="index.html">HOME</a></li>
-        <li><a href="lesson.html">ENGLISH WORDS</a></li>
-        <li><a href="register.html">REGISTER</a></li>
-        <li><a href="login.html">LOGIN</a></li>
+        <li><a href="index.html">STRONA GLOWNA</a></li>
+        <li><a href="lesson.html">LEKCJA</a></li>
     </ul>
 </header>
 
@@ -22,7 +20,6 @@
         <p>Rozpocznij swoją naukę w łatwy i przyjemny sposób. Wybierz jedną z lekcji i zacznij rozwijać swoje umiejętności!</p>
         <div class="cta">
             <button onclick="window.location.href='lesson.html'">Rozpocznij lekcję</button>
-            <button onclick="window.location.href='register.html'">Zarejestruj się</button>
         </div>
     </section>
 

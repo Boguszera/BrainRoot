@@ -4,25 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrainRoot</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
 <header>
     <ul class="menu">
-        <li><a href="index.html">HOME</a></li>
-        <li><a href="lesson.html">ENGLISH WORDS</a></li>
-        <li><a href="register.html">REGISTER</a></li>
-        <li><a href="login.html">LOGIN</a></li>
+        <li><a href="index.html">STRONA GLOWNA</a></li>
+        <li><a href="lesson.html">LEKCJA</a></li>
     </ul>
 </header>
 
 <main>
     <h2>Przetłumacz Słowo</h2>
     <div class="word-container">
-        <p class="word">Cat</p> <!-- Przykład wyświetlanego słowa -->
+        <p class="word">{{ word }}</p>
     </div>
 
-    <form action="" method="post">
+    <!-- Komunikat o poprawności -->
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form action="/lesson" method="POST">
         <div class="form-group">
             <label for="translation">Wpisz tłumaczenie:</label>
             <input type="text" id="translation" name="translation" required placeholder="Twoje tłumaczenie">
