@@ -22,7 +22,16 @@
 
     <!-- Komunikat o poprawności -->
     {% if message %}
-        <p>{{ message }}</p>
+    <p class="{% if 'Gratulacje' in message %}message-success{% else %}message-error{% endif %}">
+        {{ message }}
+    </p>
+    {% endif %}
+    
+    <!-- Tłumaczenie -->
+    {% if show_translation %}
+    <p class="message-translation">
+        Poprawne tłumaczenie to: <strong>{{ translation }}</strong>
+    </p>
     {% endif %}
     <form action="/lesson" method="POST">
         <div class="form-group">

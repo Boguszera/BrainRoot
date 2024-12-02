@@ -1,5 +1,5 @@
 # trasy odpowiedzialne za mapowanie URL i funkcje aplikacji
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, session
 from . import db
 from .models import Word
 
@@ -19,22 +19,47 @@ def init_routes(app):
         return lesson()
 def lesson_route():
     return lesson()
-def lesson():
-    word = Word.query.order_by(db.func.random()).first()    # pobieranie losowego slowa
 
-    # Jeśli nie ma żadnych słów w bazie, wyświetl odpowiedni komunikat
-    if word is None:
-        message = "Brak słów w bazie danych. Proszę dodać słowa."
-        return render_template('lesson.html', word=None, message=message)
-    
+
+def lesson():
+    # pobieranie danych sesji (jesli jest juz zapisane)
+    if 'word' in session and 'correct_translation' in session:
+        word = session['word']
+        correct_translation = session['correct_translation']
+    else:
+        # losowanie nowego slowa
+        word_object = Word.query.order_by(db.func.random()).first()
+        if not word_object:  # obsluga sytuacji, kiedy nie ma slow w bazie
+            message = "Brak słów w bazie danych. Proszę dodać słowa."
+            return render_template('lesson.html', word=None, message=message)
+
+        # zapis nowego slowa i tlumaczenia do sesji
+        word = word_object.word
+        correct_translation = word_object.translation
+        session['word'] = word
+        session['correct_translation'] = correct_translation
+
     message = None
     if request.method == 'POST':
-        user_translation = request.form['translation']   # pobieranie odpowiedzi uzytkownika
-        if user_translation.lower() == word.translation.lower():
-            message = "Gratulacje! Poprawne tlumaczenie."
+        # pobranie odpowiedzi użytkownika
+        user_translation = request.form['translation']
+        if user_translation.lower() == correct_translation.lower():
+            message = "Gratulacje! Poprawne tłumaczenie."
         else:
-            message = f"Zla odpowiedz :( Poprawne tlumaczenie to: {word.translation} "
-        return render_template('lesson.html', word=word.word, message=message)  # ponowne renderowanie strony
-    return render_template('lesson.html', word=word.word, message=message)  # obsluga sytuacji, gdy uzytkownik wchodzi na strone (GET)
+            message = f"Zła odpowiedź :( Poprawne tłumaczenie to: {correct_translation}."
+
+        # generowanie nowego slowa
+        new_word_object = Word.query.order_by(db.func.random()).first()
+        if new_word_object:
+            session['word'] = new_word_object.word
+            session['correct_translation'] = new_word_object.translation
+        else:
+            session.pop('word', None)
+            session.pop('correct_translation', None)
+            message = "Brak więcej słów w bazie danych."
+
+        return render_template('lesson.html', word=new_word_object.word if new_word_object else None, message=message)
+
+    return render_template('lesson.html', word=word, message=message)
 
 
