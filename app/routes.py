@@ -22,6 +22,7 @@ def lesson_route():
 
 
 def lesson():
+    correct_answers = session.get('correct_answers', 0)     # counter poprawnych odpowiedzi (jesli istnieje w sesji pobiera, jesli nie to domyslna wartosc 0)
     # pobieranie danych sesji (jesli jest juz zapisane)
     if 'word' in session and 'correct_translation' in session:
         word = session['word']
@@ -42,24 +43,28 @@ def lesson():
     message = None
     if request.method == 'POST':
         # pobranie odpowiedzi użytkownika
+        action = request.form['action']
         user_translation = request.form['translation']
-        if user_translation.lower() == correct_translation.lower():
-            message = "Gratulacje! Poprawne tłumaczenie."
-        else:
-            message = f"Zła odpowiedź :( Poprawne tłumaczenie to: {correct_translation}."
-
+        if action == "Sprawdź odpowiedź":
+            if user_translation.lower() == correct_translation.lower():
+                message = "Gratulacje! Poprawne tłumaczenie."
+                correct_answers += 1
+                session['correct_answers'] = correct_answers
+            else:
+                message = f"Zła odpowiedź :( Poprawne tłumaczenie to: {correct_translation}."
+        elif action == "Nie wiem":
+                message = f"Poprawne tłumaczenie to: {correct_translation}"
         # generowanie nowego slowa
         new_word_object = Word.query.order_by(db.func.random()).first()
-        if new_word_object:
+        if new_word_object and correct_answers <= 1:
             session['word'] = new_word_object.word
             session['correct_translation'] = new_word_object.translation
         else:
             session.pop('word', None)
             session.pop('correct_translation', None)
-            message = "Brak więcej słów w bazie danych."
+            session.pop('correct_answers', None)
+            return render_template('endlesson.html')
 
         return render_template('lesson.html', word=new_word_object.word if new_word_object else None, message=message)
 
     return render_template('lesson.html', word=word, message=message)
-
-
