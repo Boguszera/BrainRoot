@@ -11,6 +11,7 @@ Interaktywna platforma edukacyjna
 - **Prosta nawigacja** – przejście do kolejnych słówek i sprawdzanie wyników.
 
 ## Struktura projektu
+```
 BrainRoot/
 │
 ├── app/                           # Aplikacja backendowa (logika aplikacji)
@@ -31,7 +32,7 @@ BrainRoot/
 ├── .gitignore                     # Ignorowanie plików w Git
 ├── LICENSE                        # Licencja projektu
 └── README.md                      # Dokumentacja projektu (ten plik)
-
+```
 ## Technologie
 
 - **Flask** 

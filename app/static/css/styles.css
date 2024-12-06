@@ -221,16 +221,6 @@ main {
     font-size: 1em;
 }
 
-/* Stopka */
-footer {
-    text-align: center;
-    padding: 10px 0;
-    background-color: #333;
-    color: white;
-    margin-top: 40px;
-    width: 100%;
-}
-
 /* Responsywność */
 @media (max-width: 768px) {
     main {
