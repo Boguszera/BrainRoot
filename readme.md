@@ -11,6 +11,7 @@ Interaktywna platforma edukacyjna
 - **Prosta nawigacja** – przejście do kolejnych słówek i sprawdzanie wyników.
 
 ## Struktura projektu
+```
 BrainRoot/
 │
 ├── app/                           # Aplikacja backendowa (logika aplikacji)
@@ -23,6 +24,7 @@ BrainRoot/
 ├── templates/                     # Katalog z szablonami HTML
 │   ├── index.html                 # Strona główna
 │   ├── lesson.html                # Strona lekcji (z wyświetlanym słówkiem)
+│   ├── endlesson.html             # Strona zakończonej lekcji
 │
 ├── static/                        # Katalog z plikami statycznymi (CSS, JS, obrazy)
 │   ├── css/                       # Style CSS
@@ -31,7 +33,7 @@ BrainRoot/
 ├── .gitignore                     # Ignorowanie plików w Git
 ├── LICENSE                        # Licencja projektu
 └── README.md                      # Dokumentacja projektu (ten plik)
-
+```
 ## Technologie
 
 - **Flask** 
@@ -64,7 +66,7 @@ BrainRoot/
     python3 run.py
     ```
 
-    Po uruchomieniu aplikacji, możesz otworzyć przeglądarkę i przejść pod adres: `http://127.0.0.1:5000/`.
+    Po uruchomieniu aplikacji, możesz otworzyć przeglądarkę i przejść pod adres: `http://127.0.0.1:5000/lesson`.
 
 ## Użycie
 
