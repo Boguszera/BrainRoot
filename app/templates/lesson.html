@@ -15,27 +15,28 @@
 </header>
 
 <main>
+    {% if not category_name %}
+    <!-- Wybór kategorii -->
+    <h2>Wybierz kategorię</h2>
+    <form method="POST">
+        <label for="category">Wybierz kategorię:</label>
+        <select name="category" id="category">
+            {% for category in categories %}
+                <option value="{{ category[0] }}" {% if category[0] == category_name %}selected{% endif %}>{{ category[0] }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Zatwierdź</button>
+    </form>
+    {% else %}
+    <!-- Lekcja -->
     <h2>Przetłumacz Słowo</h2>
     <div class="word-container">
         <p class="word">{{ word }}</p>
     </div>
-
-
-    {% if correct_answers %}
-    <p>{{correct_answers}}</p>
-    {% endif %}
-    <!-- Komunikat o poprawności -->
     {% if message %}
-    <p class="{% if 'Gratulacje' in message %}message-success{% else %}message-error{% endif %}">
-        {{ message }}
-    </p>
-    {% endif %}
-    
-    <!-- Tłumaczenie -->
-    {% if show_translation %}
-    <p class="message-translation">
-        Poprawne tłumaczenie to: <strong>{{ translation }}</strong>
-    </p>
+        <p class="{% if 'Gratulacje' in message %}message-success{% else %}message-error{% endif %}">
+            {{ message }}
+        </p>
     {% endif %}
     <form action="/lesson" method="POST">
         <div class="form-group">
@@ -47,6 +48,8 @@
             <button type="submit" name="action" value="Nie wiem">Nie wiem</button>
         </div>
     </form>
+{% endif %}
+
 </main>
 </body>
 </html>
