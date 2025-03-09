@@ -4,7 +4,7 @@ from unicodedata import category
 from flask import render_template, request, redirect, url_for, session
 from . import db
 from .models import Word
-from .word_service import get_random_word
+from .word_service import get_random_word, good_answer
 
 """
 render_template: do renderowania plikow HTML
@@ -66,6 +66,7 @@ def lesson():
         user_translation = request.form['translation']
         if action == "Sprawdź odpowiedź":
             if user_translation.lower() == correct_translation.lower():
+                good_answer(word)
                 message = "Gratulacje! Poprawne tłumaczenie."
                 correct_answers += 1
                 session['correct_answers'] = correct_answers
@@ -75,7 +76,7 @@ def lesson():
             message = f"Poprawne tłumaczenie to: {correct_translation}"
         # generowanie nowego slowa
         new_word_object = get_random_word(category_name)
-        if new_word_object and correct_answers <= 5:
+        if new_word_object and correct_answers <= 20:
             session['word'] = new_word_object.word
             session['correct_translation'] = new_word_object.translation
         else:

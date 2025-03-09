@@ -22,3 +22,12 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Ignorowanie plików baz danych
+*.db
+
+# Ignorowanie folderów __pycache__
+__pycache__/
+
+# Ignorowanie plików .pyc
+*.pyc

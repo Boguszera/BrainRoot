@@ -20,3 +20,14 @@ def get_random_word(category_name):
         # Losujemy słowo, które jest w trakcie nauki (is_progress=1)
     progress_word = Word.query.filter_by(category=category_name, is_progress=1).order_by(func.random()).first()
     return progress_word
+
+def good_answer(word):
+    word_object = Word.query.filter_by(word=word).first()
+    word_object.correct_answers += 1
+    try:
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating correct_answers for word '{word}': {e}")
+        return False

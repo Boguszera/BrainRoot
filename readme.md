@@ -20,6 +20,8 @@ BrainRoot/
 │   ├── models.py                  # Modele bazy danych
 │   ├── requirements.txt           # Zależności Pythona do instalacji
 │   ├── routes.py                  # Definicje tras (routingu)
+│   ├── scripts/                    # Skrypty pomocnicze
+│   │   ├── seed.py                 # Skrypt dodający presety do bazy danych
 │
 ├── templates/                     # Katalog z szablonami HTML
 │   ├── index.html                 # Strona główna
