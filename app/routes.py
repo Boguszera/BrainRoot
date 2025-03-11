@@ -4,7 +4,7 @@ from unicodedata import category
 from flask import render_template, request, redirect, url_for, session
 from . import db
 from .models import Word
-from .word_service import get_random_word, good_answer
+from .word_service import get_random_word, good_answer, handle_review_cycle, increment_lessons
 
 """
 render_template: do renderowania plikow HTML
@@ -58,12 +58,19 @@ def lesson():
         session['correct_translation'] = correct_translation
 
     message = None
+
+    # sprawdzamy, czy to jest powtórka
+    is_review = session.get('is_review', False)  # Flaga powtórki
+    if is_review:
+        message = "POWTÓRKA!"
+
     if request.method == 'POST':
         # pobranie odpowiedzi użytkownika
         action = request.form.get('action')
         if not action:
             return render_template('lesson.html', word=word, message=message, category_name=category_name)
         user_translation = request.form['translation']
+
         if action == "Sprawdź odpowiedź":
             if user_translation.lower() == correct_translation.lower():
                 good_answer(word)
@@ -74,6 +81,13 @@ def lesson():
                 message = f"Zła odpowiedź :( Poprawne tłumaczenie to: {correct_translation}."
         elif action == "Nie wiem":
             message = f"Poprawne tłumaczenie to: {correct_translation}"
+
+        # co 7 lekcji aktywujemy powtórki
+        if correct_answers % 7 == 0:
+            handle_review_cycle()
+            session['is_review'] = True  # Ustawiamy flagę powtórek w sesji
+        increment_lessons()
+
         # generowanie nowego slowa
         new_word_object = get_random_word(category_name)
         if new_word_object and correct_answers <= 20:

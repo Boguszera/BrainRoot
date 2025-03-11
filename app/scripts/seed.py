@@ -74,8 +74,8 @@ def seed_data():
         # Wstawianie wielu rekordów do bazy danych
         for word, translation, category in words_data:
             db.session.execute(text("""
-                INSERT INTO words (word, translation, category, correct_answers, is_progress) 
-                VALUES (:word, :translation, :category, 0, 0)
+                INSERT INTO words (word, translation, category, knowledge_level, is_progress, times_reviewed, lessons_since_last_review) 
+                VALUES (:word, :translation, :category, 1, 0, 0, 0)
             """), {'word': word, 'translation': translation, 'category': category})
 
         db.session.commit()

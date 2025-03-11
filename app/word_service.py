@@ -23,11 +23,39 @@ def get_random_word(category_name):
 
 def good_answer(word):
     word_object = Word.query.filter_by(word=word).first()
-    word_object.correct_answers += 1
+
+    if not word_object:
+        return False  # Jeśli słowo nie istnieje w bazie, zwracamy False
+
     try:
+        if word_object.knowledge_level < 5:
+            word_object.knowledge_level += 1  # Zwiększamy poziom znajomości
+
+        if word_object.knowledge_level == 5:
+            word_object.is_progress = False  # Usuwamy słowo z aktywnej nauki
+            word_object.lessons_since_last_review = 0  # Przygotowujemy do powtórek
+
         db.session.commit()
         return True
     except Exception as e:
-        db.session.rollback()
-        print(f"Error updating correct_answers for word '{word}': {e}")
+        db.session.rollback()  # Cofamy zmiany w razie błędu
+        print(f"Error updating knowledge_level for word '{word}': {e}")
         return False
+
+
+def handle_review_cycle():
+    # Wybiera słowa do powtórek co 7 lekcji.
+    words_for_review = Word.query.filter(Word.is_progress == False, Word.lessons_since_last_review >= 7).all()
+
+    for word in words_for_review:
+        word.is_progress = True  # Przywracamy do aktywnej nauki na czas powtórki
+        word.lessons_since_last_review = 0  # Resetujemy licznik powtórek
+
+    db.session.commit()
+    return words_for_review
+
+def increment_lessons():
+    # Zwiększa licznik lekcji dla słów w powtórkach.
+
+    db.session.query(Word).filter(Word.is_progress == False).update({"lessons_since_last_review": Word.lessons_since_last_review + 1})
+    db.session.commit()

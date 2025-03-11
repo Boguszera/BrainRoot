@@ -15,6 +15,11 @@
 </header>
 
 <main>
+    {% if message %}
+    <p class="{% if 'Gratulacje' in message %}message-success{% else %}message-error{% endif %}">
+        {{ message }}
+    </p>
+{% endif %}
     {% if not category_name %}
     <!-- Wybór kategorii -->
     <h2>Wybierz kategorię</h2>
