@@ -7,19 +7,20 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-<header>
-    <ul class="menu">
-        <li><a href="index.html">STRONA GLOWNA</a></li>
-        <li><a href="lesson.html">LEKCJA</a></li>
-    </ul>
-</header>
+    <header>
+        <ul class="menu">
+            <li><a href="{{ url_for('index') }}">STRONA GŁÓWNA</a></li>
+            <li><a href="{{ url_for('lesson_route') }}">LEKCJA</a></li>
+            <li><a href="{{ url_for('settings') }}">USTAWIENIA</a></li>
+        </ul>
+    </header>
 
 <main>
     <section class="welcome">
         <h1>Witaj na platformie edukacyjnej BrainRoot!</h1>
         <p>Rozpocznij swoją naukę w łatwy i przyjemny sposób. Wybierz jedną z lekcji i zacznij rozwijać swoje umiejętności!</p>
         <div class="cta">
-            <button onclick="window.location.href='lesson.html'">Rozpocznij lekcję</button>
+            <button onclick="window.location.href='/lesson'">Rozpocznij lekcję</button>
         </div>
     </section>
 

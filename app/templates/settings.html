@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfiguracja</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="menu">
+                <li><a href="{{ url_for('index') }}">Strona Główna</a></li>
+                <li><a href="{{ url_for('lesson_route') }}">Lekcja</a></li>
+                <li><a href="{{ url_for('settings') }}">Ustawienia</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="config-container">
+        <h1>Ustawienia nauki</h1>
+
+        <!-- obsługa komunikatów Flash -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+        <ul class="flash-messages">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" class="config-form">
+            <div class="form-group">
+                <label for="translation_direction">Wybierz kierunek tłumaczenia:</label>
+                <select name="translation_direction" id="translation_direction">
+                    <option value="ang-pl">Angielski → Polski</option>
+                    <option value="pl-ang">Polski → Angielski</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="review_frequency">Co ile lekcji powtórka?</label>
+                <input type="number" name="review_frequency" id="review_frequency" min="1" value="7">
+            </div>
+
+            <button type="submit" class="btn-submit">Zapisz</button>
+        </form>
+
+        <br>
+        <a href="{{ url_for('lesson_route') }}" class="back-link">Wróć do lekcji</a>
+    </main>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # trasy odpowiedzialne za mapowanie URL i funkcje aplikacji
 from unicodedata import category
 
-from flask import render_template, request, redirect, url_for, session
+from flask import render_template, request, redirect, url_for, session, flash, session
 from . import db
 from .models import Word
 from .word_service import get_random_word, good_answer, handle_review_cycle, increment_lessons
@@ -16,6 +16,27 @@ Word: model reprezentujacy tabele w bazie danych
 
 # trasa /lesson
 def init_routes(app):
+    # trasa dla strony głównej
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+    @app.route('/settings', methods=['GET', 'POST'])
+    def settings():
+        if request.method == 'POST':
+            # pobierz dane z formularza
+            translation_direction = request.form.get('translation_direction')  # ang -> pl lub pl -> ang
+            review_frequency = int(request.form.get('review_frequency', 7))  # domyślnie 7 lekcji
+
+            # zapisz do sesji
+            session['translation_direction'] = translation_direction
+            session['review_frequency'] = int(review_frequency)
+
+            flash("Ustawienia zapisane!", "success")
+            return redirect(url_for('settings'))  # Przekierowanie do lekcji po zapisaniu ustawień
+
+        return render_template('settings.html')
+
     # trasa /lesson
     @app.route('/lesson', methods=['GET', 'POST'])
     def lesson_route():
@@ -25,6 +46,7 @@ def init_routes(app):
 def lesson():
     correct_answers = session.get('correct_answers', 0)  # counter poprawnych odpowiedzi (jesli istnieje w sesji pobiera, jesli nie to domyslna wartosc 0)
     category_name = session.get('category_name')
+    translation_direction = session.get('translation_direction', 'ang-pl')  # domyślnie angielski na polski
 
     if not category_name:
         categories = Word.query.with_entities(
@@ -51,9 +73,14 @@ def lesson():
             message = "Brak słów w bazie danych. Proszę dodać słowa."
             return render_template('lesson.html', word=None, message=message)
 
-        # zapis nowego slowa i tlumaczenia do sesji
-        word = word_object.word
-        correct_translation = word_object.translation
+        # obsługa kierunku tłumaczenia, zapis tlumaczenia do sesji
+        if translation_direction == 'ang-pl':
+            word = word_object.word
+            correct_translation = word_object.translation
+        else:
+            word = word_object.translation  # odwracamy kierunek
+            correct_translation = word_object.word
+
         session['word'] = word
         session['correct_translation'] = correct_translation
 

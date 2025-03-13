@@ -1,5 +1,6 @@
 # obsługa logiki związanej z zarządzaniem słówkami i sposobem ich wyświetlania
 
+from flask import session
 from .models import Word
 from . import db
 from sqlalchemy import func
@@ -44,7 +45,7 @@ def good_answer(word):
 
 
 def handle_review_cycle():
-    # Wybiera słowa do powtórek co 7 lekcji.
+    review_frequency = session.get('review_frequency', 7)  # Pobierz z sesji, domyślnie 7 lekcji
     words_for_review = Word.query.filter(Word.is_progress == False, Word.lessons_since_last_review >= 7).all()
 
     for word in words_for_review:
