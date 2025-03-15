@@ -4,7 +4,7 @@ from unicodedata import category
 from flask import render_template, request, redirect, url_for, session, flash, session
 from . import db
 from .models import Word
-from .word_service import get_random_word, good_answer, handle_review_cycle, increment_lessons
+from .word_service import get_random_word, good_answer, handle_review_cycle, increment_lessons, clean_text, handle_review_cycle
 
 """
 render_template: do renderowania plikow HTML
@@ -27,10 +27,12 @@ def init_routes(app):
             # pobierz dane z formularza
             translation_direction = request.form.get('translation_direction')  # ang -> pl lub pl -> ang
             review_frequency = int(request.form.get('review_frequency', 7))  # domyślnie 7 lekcji
+            words_frequency = int(request.form.get('words_frequency', 20))  # domyślnie 20 słów
 
             # zapisz do sesji
             session['translation_direction'] = translation_direction
             session['review_frequency'] = int(review_frequency)
+            session['word_frequency'] = int(words_frequency)
 
             flash("Ustawienia zapisane!", "success")
             return redirect(url_for('settings'))  # Przekierowanie do lekcji po zapisaniu ustawień
@@ -47,6 +49,7 @@ def lesson():
     correct_answers = session.get('correct_answers', 0)  # counter poprawnych odpowiedzi (jesli istnieje w sesji pobiera, jesli nie to domyslna wartosc 0)
     category_name = session.get('category_name')
     translation_direction = session.get('translation_direction', 'ang-pl')  # domyślnie angielski na polski
+    word_frequency = session.get('word_frequency', 20)
 
     if not category_name:
         categories = Word.query.with_entities(
@@ -86,20 +89,24 @@ def lesson():
 
     message = None
 
-    # sprawdzamy, czy to jest powtórka
-    is_review = session.get('is_review', False)  # Flaga powtórki
-    if is_review:
-        message = "POWTÓRKA!"
+    # Sprawdzamy, czy należy aktywować powtórkę na podstawie bazy danych
+    review_frequency = session.get('review_frequency', 7)  # Pobieramy wartość z ustawień użytkownika
+    words_for_review = Word.query.filter(Word.is_progress == False,
+                                         Word.lessons_since_last_review >= review_frequency).all()
 
+    is_review = bool(words_for_review)  # Jeśli są słowa do powtórki, aktywujemy tryb powtórek
+    review_message = "POWTÓRKA!" if is_review else None
+
+    message = None
     if request.method == 'POST':
         # pobranie odpowiedzi użytkownika
         action = request.form.get('action')
         if not action:
-            return render_template('lesson.html', word=word, message=message, category_name=category_name)
+            return render_template('lesson.html', word=word, message=message, category_name=category_name, review_message=review_message)
         user_translation = request.form['translation']
 
         if action == "Sprawdź odpowiedź":
-            if user_translation.lower() == correct_translation.lower():
+            if clean_text(user_translation) == clean_text(correct_translation):
                 good_answer(word)
                 message = "Gratulacje! Poprawne tłumaczenie."
                 correct_answers += 1
@@ -110,14 +117,13 @@ def lesson():
             message = f"Poprawne tłumaczenie to: {correct_translation}"
 
         # co 7 lekcji aktywujemy powtórki
-        if correct_answers % 7 == 0:
+        if is_review:
             handle_review_cycle()
-            session['is_review'] = True  # Ustawiamy flagę powtórek w sesji
         increment_lessons()
 
         # generowanie nowego slowa
         new_word_object = get_random_word(category_name)
-        if new_word_object and correct_answers <= 20:
+        if new_word_object and correct_answers <= (word_frequency-1):
             session['word'] = new_word_object.word
             session['correct_translation'] = new_word_object.translation
         else:
@@ -127,6 +133,6 @@ def lesson():
             session.pop('category_name', None)
             return render_template('endlesson.html')
 
-        return render_template('lesson.html', word=new_word_object.word if new_word_object else None, message=message, category_name=category_name)
+        return render_template('lesson.html', word=new_word_object.word if new_word_object else None, message=message, category_name=category_name, review_message=review_message)
 
-    return render_template('lesson.html', word=word, message=message, category_name=category_name)
+    return render_template('lesson.html', word=word, message=message, category_name=category_name, review_message=review_message)

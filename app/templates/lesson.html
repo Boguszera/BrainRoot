@@ -8,11 +8,13 @@
 </head>
 <body>
     <header>
-        <ul class="menu">
-            <li><a href="{{ url_for('index') }}">STRONA GŁÓWNA</a></li>
-            <li><a href="{{ url_for('lesson_route') }}">LEKCJA</a></li>
-            <li><a href="{{ url_for('settings') }}">USTAWIENIA</a></li>
-        </ul>
+        <nav>
+            <ul class="menu">
+                <li><a href="{{ url_for('index') }}">Strona Główna</a></li>
+                <li><a href="{{ url_for('lesson_route') }}">Lekcja</a></li>
+                <li><a href="{{ url_for('settings') }}">Ustawienia</a></li>
+            </ul>
+        </nav>
     </header>
 
 <main>
@@ -35,6 +37,16 @@
     </div>
 </form>
     {% else %}
+    {% if review_message %}
+    <!-- Jeśli jest powtórka, dodajemy nagłówek "POWTÓRKA" -->
+    {% if session.get('is_review', False) %}
+        <h2>POWTÓRKA</h2>
+    {% endif %}
+    <!-- Wyświetlamy komunikat -->
+    <p class="{% if 'Gratulacje' in message %}message-success{% else %}message-error{% endif %}">
+        {{ review_message }}
+    </p>
+{% endif %}
     <!-- Lekcja -->
     <h2>Przetłumacz Słowo</h2>
     <div class="word-container">
