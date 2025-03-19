@@ -35,6 +35,7 @@ def init_routes(app):
             session['word_frequency'] = int(words_frequency)
 
             flash("Ustawienia zapisane!", "success")
+            print(f"ZAPISUJĘ USTAWIENIA: {session}")
             return redirect(url_for('settings'))  # Przekierowanie do lekcji po zapisaniu ustawień
 
         return render_template('settings.html')
@@ -48,7 +49,7 @@ def init_routes(app):
 def lesson():
     correct_answers = session.get('correct_answers', 0)  # counter poprawnych odpowiedzi (jesli istnieje w sesji pobiera, jesli nie to domyslna wartosc 0)
     category_name = session.get('category_name')
-    translation_direction = session.get('translation_direction', 'ang-pl')  # domyślnie angielski na polski
+    translation_direction = session.get('translation_direction')  # domyślnie angielski na polski
     word_frequency = session.get('word_frequency', 20)
 
     if not category_name:
@@ -63,16 +64,16 @@ def lesson():
             session['category_name'] = selected_category
             category_name = selected_category
         else:
-            return render_template('lesson.html', categories=categories, category_name = None)
+            return render_template('lesson.html', categories=categories, category_name=None)
 
-        # przejscie do lekcji pobieranie danych sesji (jesli jest juz zapisane)
+    # przejscie do lekcji, pobieranie danych sesji (jesli sa juz zapisane)
     if 'word' in session and 'correct_translation' in session:
         word = session['word']
         correct_translation = session['correct_translation']
     else:
-        # losowanie nowego slowa
+        # losowanie nowego słowa
         word_object = get_random_word(category_name)
-        if not word_object:  # obsluga sytuacji, kiedy nie ma slow w bazie
+        if not word_object:  # Jeśli brak słów w bazie
             message = "Brak słów w bazie danych. Proszę dodać słowa."
             return render_template('lesson.html', word=None, message=message)
 
@@ -81,28 +82,27 @@ def lesson():
             word = word_object.word
             correct_translation = word_object.translation
         else:
-            word = word_object.translation  # odwracamy kierunek
+            word = word_object.translation  # Odwracamy kierunek
             correct_translation = word_object.word
 
         session['word'] = word
         session['correct_translation'] = correct_translation
 
-    message = None
-
-    # Sprawdzamy, czy należy aktywować powtórkę na podstawie bazy danych
-    review_frequency = session.get('review_frequency', 7)  # Pobieramy wartość z ustawień użytkownika
+    # obsługa powtórki
+    review_frequency = session.get('review_frequency', 7) # pobieranie wartości z ustawień użytkownia
     words_for_review = Word.query.filter(Word.is_progress == False,
                                          Word.lessons_since_last_review >= review_frequency).all()
 
-    is_review = bool(words_for_review)  # Jeśli są słowa do powtórki, aktywujemy tryb powtórek
+    is_review = bool(words_for_review)  # aktywacja trybu powtórek (jeśli są słowa do powtórki)
     review_message = "POWTÓRKA!" if is_review else None
 
     message = None
     if request.method == 'POST':
-        # pobranie odpowiedzi użytkownika
+        # obsługa odpowiedzi użytkownika
         action = request.form.get('action')
         if not action:
             return render_template('lesson.html', word=word, message=message, category_name=category_name, review_message=review_message)
+
         user_translation = request.form['translation']
 
         if action == "Sprawdź odpowiedź":
@@ -121,18 +121,24 @@ def lesson():
             handle_review_cycle()
         increment_lessons()
 
-        # generowanie nowego slowa
+        # generowanie nowego słowa
         new_word_object = get_random_word(category_name)
-        if new_word_object and correct_answers <= (word_frequency-1):
-            session['word'] = new_word_object.word
-            session['correct_translation'] = new_word_object.translation
+        if new_word_object and correct_answers <= (word_frequency - 1):
+            if translation_direction == 'ang-pl':
+                session['word'] = new_word_object.word
+                session['correct_translation'] = new_word_object.translation
+            else:
+                session['word'] = new_word_object.translation
+                session['correct_translation'] = new_word_object.word
         else:
             session.pop('word', None)
             session.pop('correct_translation', None)
             session.pop('correct_answers', None)
             session.pop('category_name', None)
-            return render_template('endlesson.html')
+            return render_template('endlesson.html')  # Zwrócenie odpowiedzi
 
-        return render_template('lesson.html', word=new_word_object.word if new_word_object else None, message=message, category_name=category_name, review_message=review_message)
+        return render_template('lesson.html', word=session['word'], message=message, category_name=category_name, review_message=review_message)
 
+    # ostateczny render
     return render_template('lesson.html', word=word, message=message, category_name=category_name, review_message=review_message)
+
