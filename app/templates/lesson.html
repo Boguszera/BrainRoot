@@ -13,6 +13,7 @@
                 <li><a href="{{ url_for('index') }}">Strona Główna</a></li>
                 <li><a href="{{ url_for('lesson_route') }}">Lekcja</a></li>
                 <li><a href="{{ url_for('settings') }}">Ustawienia</a></li>
+                <li><a href="{{ url_for('manager') }}">Manager</a></li>
             </ul>
         </nav>
     </header>
@@ -26,9 +27,9 @@
         <label for="category">Wybierz kategorię:</label>
         <select name="category" id="category">
             {% for category in categories %}
-                <option value="{{ category[0] }}" {% if category[0] == category_name %}selected{% endif %}>
-                    {{ category[0] }}
-                </option>
+                <option value="{{ category.name }}" {% if category.name == category_name %}selected{% endif %}>
+    {{ category.name }}
+</option>
             {% endfor %}
         </select>
     </div>

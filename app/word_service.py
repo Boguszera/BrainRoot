@@ -2,25 +2,26 @@
 
 import re
 from flask import session
-from .models import Word
+from .models import Word, Category
 from . import db
 from sqlalchemy import func
 
 def get_random_word(category_name):
-    count_all = Word.query.filter_by(category=category_name).count()
-    count_progress = Word.query.filter_by(category=category_name, is_progress=1).count()
+    count_all = Word.query.join(Word.category).filter(Category.name == category_name).count()
+    count_progress = Word.query.join(Word.category).filter(Category.name == category_name,
+                                                           Word.is_progress == 1).count()
 
     # obsługa sytuacji, kiedy w puli słów w trakcie nauki jest mniej niż 50 słów
     if count_progress < 50:
         # Wybieramy słowa, które nie są w trakcie nauki
-        words_to_progress = Word.query.filter_by(category=category_name, is_progress=0).limit(50 - count_progress).all()
+        words_to_progress = Word.query.join(Word.category).filter(Category.name == category_name, Word.is_progress == 0).limit(50 - count_progress).all()
 
         for word in words_to_progress:
             word.is_progress = 1  # Ustawiamy je jako słowa w trakcie nauki
             db.session.commit()
 
         # Losujemy słowo, które jest w trakcie nauki (is_progress=1)
-    progress_word = Word.query.filter_by(category=category_name, is_progress=1).order_by(func.random()).first()
+    progress_word = Word.query.join(Word.category).filter(Category.name == category_name, Word.is_progress == 1).order_by(func.random()).first()
     return progress_word
 
 def good_answer(word):

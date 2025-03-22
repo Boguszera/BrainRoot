@@ -9,6 +9,7 @@ Interaktywna platforma edukacyjna
 - **Sprawdzanie odpowiedzi** – aplikacja weryfikuje poprawność tłumaczenia.
 - **System komunikatów** – informowanie użytkownika o poprawności jego odpowiedzi.
 - **Prosta nawigacja** – przejście do kolejnych słówek i sprawdzanie wyników.
+- **Zarządzanie zestawami** – użytkownicy mogą tworzyć, usuwać oraz kategoryzować własne zestawy słówek w aplikacji.
 
 ## Struktura projektu
 ```
@@ -28,6 +29,7 @@ BrainRoot/
 │   ├── lesson.html                # Strona lekcji (z wyświetlanym słówkiem)
 │   ├── endlesson.html             # Strona zakończonej lekcji
 │   ├── settings.html              # Strona konfiguracyjna
+│   ├── manager.html               # Strona zarządzania zestawami
 │
 ├── static/                        # Katalog z plikami statycznymi (CSS, JS, obrazy)
 │   ├── css/                       # Style CSS
@@ -73,9 +75,7 @@ BrainRoot/
 
 ## Użycie
 
+- **Zarządzanie zestawami** – użytkownicy mogą dodawać i usuwać własne zestawy słówek oraz je kategoryzować na stronie `manager.html`.
 - **Lekcje** – użytkownicy mogą rozpocząć naukę tłumaczenia słówek na stronie `lesson.html`.
 
-### Dodatkowe informacje
-- Jeśli chcesz dodać nowe słówka do bazy danych, możesz edytować odpowiednią tabelę w bazie danych SQLite.
-- Możliwość rozbudowy aplikacji o dodatkowe języki oraz tryby nauki.
 

@@ -26,16 +26,28 @@ class Word(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.String(100), nullable=False)
     translation = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(100), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
 
     knowledge_level = db.Column(db.Integer, default=1)
     is_progress = db.Column(db.Boolean, default=True)  # czy słowo jest w aktywnej puli
     times_reviewed = db.Column(db.Integer, default=0)  # ile razy było w powtórkach
     lessons_since_last_review = db.Column(db.Integer, default=0)  # licznik lekcji od ostatniej powtórki
 
-    # definicja metody __repr__ (uzywana do okreslenia, jak obiekt klasy Word zostanie zaprezentowany jako tekst [w celu uzyskania stringa])
+    # Relacja z kategorią
+    category = db.relationship('Category', back_populates='words')
+
     def __repr__(self):
-        return f"<Word {self.word} -> {self.translation}"
+        return f"<Word {self.word} -> {self.translation}>"
+
+class Category(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True, nullable=False)
+
+    # Relacja z słówkami
+    words = db.relationship('Word', back_populates='category', cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f"<Category {self.name}>"
 
 # funkcja inicjalizujaca baze danych (laczenie instancji SQLAlchemy z aplikacja Flask, tworzenie tabel i kontekst)
 def init_db(app):

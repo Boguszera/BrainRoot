@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel zarządzania</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul class="menu">
+                <li><a href="{{ url_for('index') }}">Strona Główna</a></li>
+                <li><a href="{{ url_for('lesson_route') }}">Lekcja</a></li>
+                <li><a href="{{ url_for('settings') }}">Ustawienia</a></li>
+                <li><a href="{{ url_for('manager') }}">Manager</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Sekcja kategorii -->
+        {% if categories %}
+            <form method="POST">
+                <div class="form-group">
+                    <label for="category">Zarządzaj kategorią:</label>
+                    <select name="category" id="category">
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if category.id == selected_category_id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <button type="submit">Zatwierdź</button>
+                </div>
+            </form>
+        {% endif %}
+
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
+
+        <!-- Formularz dodawania nowej kategorii -->
+        <div class="form-group">
+            <form method="POST" action="/add_category">
+                <label for="new_category">Dodaj kategorię:</label>
+                <input type="text" id="new_category" name="new_category" required>
+                <button type="submit">Dodaj</button>
+            </form>
+        </div>
+
+        <!-- Sekcja słówek dla wybranej kategorii -->
+        {% if del_message %}
+            <div class="alert alert-info">
+                {{ del_message }}
+            </div>
+        {% endif %}
+
+        {% if selected_category %}
+            <section class="category-section">
+                <h2>Zarządzasz kategorią: <span class="category-name">{{ selected_category.name }}</span></h2>
+
+                <!-- Tabela z listą słów -->
+                <table class="word-table">
+                    <thead>
+                        <tr>
+                            <th>Słowo</th>
+                            <th>Tłumaczenie</th>
+                            <th>Akcja</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for word in selected_category.words %}
+                            <tr>
+                                <td>{{ word.word }}</td>
+                                <td>{{ word.translation }}</td>
+                                <td>
+                                    <form method="POST" action="/delete_word">
+                                        <input type="hidden" name="word_id" value="{{ word.id }}">
+                                        <button type="submit" class="delete-btn">Usuń</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- Formularz dodawania nowego słowa -->
+                <form method="POST" action="/add_word" class="add-word-form">
+                    <label for="new_word">Dodaj słowo:</label>
+                    <input type="text" id="new_word" name="new_word" placeholder="Słowo" required>
+                    <input type="text" name="new_translation" placeholder="Tłumaczenie" required>
+                    <input type="hidden" name="category_id" value="{{ selected_category.id }}">
+                    <button type="submit" class="add-btn">Dodaj</button>
+                </form>
+            </section>
+        {% endif %}
+    </main>
+</body>
+</html>

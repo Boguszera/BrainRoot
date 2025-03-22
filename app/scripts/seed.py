@@ -1,13 +1,12 @@
 from flask import Flask
-from app.models import db
+from app.models import db, Category, Word
 from app.config import Config
+from sqlalchemy import text
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-
-from sqlalchemy import text
 
 def seed_data():
     with app.app_context():
@@ -47,7 +46,8 @@ def seed_data():
             ('Where’s the nearest public transport stop?', 'Gdzie jest najbliższy przystanek?', 'top100 zwrotów'),
             ('How long does it take to get there?', 'Ile czasu zajmuje dotarcie tam?', 'top100 zwrotów'),
             ('What’s the best way to get to…?', 'Jaki jest najlepszy sposób, by dostać się do…?', 'top100 zwrotów'),
-            ('Could you recommend a good restaurant nearby?', 'Czy możesz polecić dobrą restaurację w pobliżu?', 'top100 zwrotów'),
+            ('Could you recommend a good restaurant nearby?', 'Czy możesz polecić dobrą restaurację w pobliżu?',
+             'top100 zwrotów'),
             ('I’d like to check out, please.', 'Chciałbym się wymeldować.', 'top100 zwrotów'),
             ('From what I gather…', 'Z tego, co rozumiem…', 'top100 zwrotów'),
             ('It’s a matter of perspective.', 'To kwestia perspektywy.', 'top100 zwrotów'),
@@ -71,12 +71,25 @@ def seed_data():
             ('No hard feelings.', 'Bez urazy.', 'top100 zwrotów')
         ]
 
-        # Wstawianie wielu rekordów do bazy danych
-        for word, translation, category in words_data:
+        # Dodanie kategorii do tabeli 'Category', jeśli nie istnieją
+        categories = {category_name: Category.query.filter_by(name=category_name).first()
+                      for _, _, category_name in words_data}
+
+        # Jeśli kategoria nie istnieje, dodajemy ją
+        for category_name in categories:
+            if categories[category_name] is None:
+                new_category = Category(name=category_name)
+                db.session.add(new_category)
+                db.session.commit()
+                categories[category_name] = new_category
+
+        # Wstawianie słów do tabeli 'words'
+        for word, translation, category_name in words_data:
+            category = categories[category_name]  # Przypisanie odpowiedniej kategorii
             db.session.execute(text("""
-                INSERT INTO words (word, translation, category, knowledge_level, is_progress, times_reviewed, lessons_since_last_review) 
-                VALUES (:word, :translation, :category, 1, 0, 0, 0)
-            """), {'word': word, 'translation': translation, 'category': category})
+                INSERT INTO words (word, translation, category_id, knowledge_level, is_progress, times_reviewed, lessons_since_last_review) 
+                VALUES (:word, :translation, :category_id, 1, 0, 0, 0)
+            """), {'word': word, 'translation': translation, 'category_id': category.id})
 
         db.session.commit()
         print("Dane seedujące zostały dodane do bazy!")
