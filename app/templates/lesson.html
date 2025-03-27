@@ -19,6 +19,12 @@
     </header>
 
 <main>
+    {% if ai_mode %}
+    <p>Tryb AI: Włączony</p>
+{% else %}
+    <p>Tryb AI: Wyłączony</p>
+{% endif %}
+
     {% if not category_name %}
     <!-- Wybór kategorii -->
 <h2>Wybierz kategorię</h2>
@@ -37,6 +43,15 @@
         <button type="submit">Zatwierdź</button>
     </div>
 </form>
+
+<form method="POST" id="aiForm">
+    <p>Tryb AI</p>
+    <label for="ai_mode" class="switch">
+        <input type="checkbox" id="ai_mode" name="ai_mode" {% if ai_mode %}checked{% endif %}>
+        <span class="slider"></span>
+    </label>
+</form>
+
     {% else %}
     {% if review_message %}
     <!-- Jeśli jest powtórka, dodajemy nagłówek "POWTÓRKA" -->
@@ -72,4 +87,11 @@
 
 </main>
 </body>
+
+<script>
+document.getElementById('ai_mode').addEventListener('change', function() {
+    document.getElementById('aiForm').submit();
+});
+</script>
+
 </html>

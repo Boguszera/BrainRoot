@@ -13,3 +13,7 @@ class Config:
 
     #wylaczenie sledzenia zmian w celu oszczednosci zasobow
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # konfiguracja trybu AI
+    AI_MODE_ENABLED = os.environ.get('AI_MODE_ENABLED', 'False').lower() in ('true', '1')
+    AI_MODEL_NAME = os.environ.get('AI_MODEL_NAME', 'TinyLlama/TinyLlama-1.1B-Chat-v1.0')
