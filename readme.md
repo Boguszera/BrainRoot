@@ -35,43 +35,109 @@ BrainRoot/
 │   ├── css/                       # Style CSS
 │   └── js/                        # Skrypty JavaScript
 │
+├── .env.example                   # Przykładowe zmienne środowiskowe
 ├── .gitignore                     # Ignorowanie plików w Git
+├── .dockerignore                  # Ignorowanie plików w Dockerze
+├── Dockerfile                     # Plik konfiguracyjny dla Dockera
 ├── LICENSE                        # Licencja projektu
 └── README.md                      # Dokumentacja projektu (ten plik)
 ```
+
 ## Technologie
+- **Flask**
+- **HTML/CSS**
+- **SQLAlchemy**
+- **SQLite**
+- **Python**
+- **Docker**
 
-- **Flask** 
-- **HTML/CSS** 
-- **SQLAlchemy** 
-- **SQLite** 
-- **Python** 
+## Instalacja aplikacji BrainRoot
 
-## Instalacja
+### Opcja 1: Instalacja bez Dockera
 
-1. **Instalacja Pythona**:
-    Jeśli jeszcze nie masz Pythona 3, zainstaluj go za pomocą poniższych komend (dla systemów opartych na Linuxie):
+#### Windows
+1. Pobierz i zainstaluj Python z [python.org](https://python.org).
+2. Upewnij się, że zaznaczasz opcję **Add Python to PATH** podczas instalacji.
 
+#### macOS
+1. Użyj **Homebrew**, aby zainstalować Pythona:
     ```bash
-    sudo dnf install python3
-    sudo dnf install python3-pip
+    brew install python
     ```
 
-2. **Zainstaluj zależności**:
-    Przejdź do katalogu projektu i zainstaluj wymagane biblioteki Pythonowe:
+2. Skonfiguruj zmienne środowiskowe.  
+   Skopiuj przykładowy plik `.env.example` do `.env`:
+    ```bash
+    cp .env.example .env
+    ```
 
+3. Zainstaluj zależności:
     ```bash
     pip install -r requirements.txt
     ```
 
-3. **Uruchomienie aplikacji**:
-    Aby uruchomić aplikację, użyj poniższej komendy:
-
+4. Uruchom aplikację:
     ```bash
     python3 run.py
     ```
 
-    Po uruchomieniu aplikacji, możesz otworzyć przeglądarkę i przejść pod adres: `http://127.0.0.1:5000`.
+#### Linux
+1. Zainstaluj Pythona:
+    ```bash
+    sudo apt update && sudo apt install python3 python3-pip
+    ```
+
+2. Skonfiguruj zmienne środowiskowe:
+    ```bash
+    cp .env.example .env
+    ```
+
+3. Zainstaluj zależności:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4. Uruchom aplikację:
+    ```bash
+    python3 run.py
+    ```
+
+---
+
+### Opcja 2: Instalacja z Dockerem
+
+1. Zainstaluj Dockera:
+    - **Ubuntu/Debian**: `sudo apt update && sudo apt install docker.io`
+    - **Fedora**: `sudo dnf install docker-ce docker-ce-cli containerd.io`
+
+2. Uruchom Dockera:
+    ```bash
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    ```
+
+3. Zbuduj obraz Dockera:
+    ```bash
+    docker build -t brainroot-app .
+    ```
+
+4. Uruchom kontener:
+    ```bash
+    docker run --env-file .env -p 5000:5000 brainroot-app
+    ```
+
+Aplikacja będzie dostępna pod [http://localhost:5000](http://localhost:5000).
+
+---
+
+## Konfiguracja zmiennych środowiskowych
+
+Plik `.env` zawiera ustawienia aplikacji. Przykładowy plik `.env.example`:
+
+```ini
+SECRET_KEY=my_secret_key
+DATABASE_URL=sqlite:///words.db
+```
 
 ## Użycie
 

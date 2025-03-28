@@ -31,3 +31,9 @@ __pycache__/
 
 # Ignorowanie plików .pyc
 *.pyc
+
+# Ignorowanie pliku .env
+.env
+
+# Ignorowanie folderu venv
+venv/
