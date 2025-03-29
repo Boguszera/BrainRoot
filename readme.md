@@ -1,6 +1,9 @@
 # BrainRoot
 Interaktywna platforma edukacyjna
 
+![CI](https://img.shields.io/github/workflow/status/boguszera/brainroot/Test-and-Deploy?label=CI)
+![Tests](https://img.shields.io/github/workflow/status/boguszera/brainroot/Test?label=Tests)
+
 ## O projekcie
 **BrainRoot** to aplikacja open-source stworzona w celu szybkiej i efektywnej nauki języków obcych. Aplikacja umożliwia użytkownikom naukę słówek poprzez interaktywne testy, które pomagają w zapamiętywaniu nowych terminów i ich tłumaczeniu. Dzięki prostemu interfejsowi użytkownika i systemowi śledzenia postępów, BrainRoot jest doskonałym narzędziem do codziennej nauki.
 
@@ -21,8 +24,8 @@ BrainRoot/
 │   ├── models.py                  # Modele bazy danych
 │   ├── requirements.txt           # Zależności Pythona do instalacji
 │   ├── routes.py                  # Definicje tras (routingu)
-│   ├── scripts/                    # Skrypty pomocnicze
-│   │   ├── seed.py                 # Skrypt dodający presety do bazy danych
+│   ├── scripts/                   # Skrypty pomocnicze
+│   │   ├── seed.py                # Skrypt dodający presety do bazy danych
 │
 ├── templates/                     # Katalog z szablonami HTML
 │   ├── index.html                 # Strona główna
@@ -39,8 +42,18 @@ BrainRoot/
 ├── .gitignore                     # Ignorowanie plików w Git
 ├── .dockerignore                  # Ignorowanie plików w Dockerze
 ├── Dockerfile                     # Plik konfiguracyjny dla Dockera
+├── docker-compose.yml             # Plik konfiguracyjny dla Docker Compose
 ├── LICENSE                        # Licencja projektu
-└── README.md                      # Dokumentacja projektu (ten plik)
+├── README.md                      # Dokumentacja projektu (ten plik)
+├── tests/                         # Katalog z testami aplikacji
+│   ├── __init__.py                # Inicjalizacja testów
+│   ├── test_routes.py             # Testy tras aplikacji
+│   ├── test_models.py             # Testy modeli
+│   └── test_config.py             # Testy konfiguracji
+└── .github/                       # Katalog dla GitHub Actions CI/CD
+    └── workflows/
+        └── ci.yml                 # Workflow CI dla GitHub Actions
+
 ```
 
 ## Technologie
@@ -104,26 +117,47 @@ BrainRoot/
 
 ---
 
-### Opcja 2: Instalacja z Dockerem
+### Opcja 2: Instalacja z Dockerem i Docker Compose
 
-1. Zainstaluj Dockera:
-    - **Ubuntu/Debian**: `sudo apt update && sudo apt install docker.io`
-    - **Fedora**: `sudo dnf install docker-ce docker-ce-cli containerd.io`
+1. **Zainstaluj Dockera i Docker Compose**:
+    - **Windows**:
+        1. Pobierz i zainstaluj [Docker Desktop dla Windows](https://www.docker.com/products/docker-desktop).
+        2. Upewnij się, że włączona jest obsługa kontenerów WSL 2 (Windows Subsystem for Linux), ponieważ Docker Desktop wymaga tej technologii na Windowsie.
+        3. Docker Compose jest zainstalowane automatycznie wraz z Docker Desktop, więc nie musisz go instalować osobno.
+    
+    - **Ubuntu/Debian**:
+        ```bash
+        sudo apt update && sudo apt install docker.io docker-compose
+        ```
 
-2. Uruchom Dockera:
+    - **Fedora**:
+        ```bash
+        sudo dnf install docker-ce docker-ce-cli containerd.io docker-compose
+        ```
+
+2. **Uruchom Dockera**:
+    - **Windows**: Po zainstalowaniu Docker Desktop, uruchom aplikację Docker Desktop i upewnij się, że jest aktywna.
+    - **Linux (Ubuntu/Debian/Fedora)**: Uruchom Docker przy pomocy systemd:
+        ```bash
+        sudo systemctl start docker
+        sudo systemctl enable docker
+        ```
+
+3. **Uruchom Docker Compose**:
+    W katalogu projektu, w którym znajduje się plik `docker-compose.yml`, uruchom następującą komendę:
     ```bash
-    sudo systemctl start docker
-    sudo systemctl enable docker
+    docker-compose up --build
     ```
 
-3. Zbuduj obraz Dockera:
-    ```bash
-    docker build -t brainroot-app .
-    ```
+    Ta komenda:
+    - Zbuduje obraz kontenera na podstawie pliku `Dockerfile`.
+    - Uruchomi kontener aplikacji i bazy danych (w tym przypadku SQLite, ale w przyszłości możesz zmienić na PostgreSQL lub inną bazę danych).
+    - Mapuje port 5000 z kontenera na port 5000 lokalnie, dzięki czemu aplikacja będzie dostępna pod `http://localhost:5000`.
 
-4. Uruchom kontener:
+4. **Zatrzymanie kontenerów**:
+    Aby zatrzymać kontenery, użyj komendy:
     ```bash
-    docker run --env-file .env -p 5000:5000 brainroot-app
+    docker-compose down
     ```
 
 Aplikacja będzie dostępna pod [http://localhost:5000](http://localhost:5000).

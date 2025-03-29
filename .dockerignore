@@ -8,3 +8,6 @@ __pycache__
 *.git
 venv/
 test/
+.env
+*.gitignore
+*.md

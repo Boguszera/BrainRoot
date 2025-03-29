@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: brainroot_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=app
+      - FLASK_ENV=development
+    networks:
+      - brainroot_network
+
+  db:
+    image: nouchka/sqlite3
+    container_name: brainroot_db
+    volumes:
+      - ./data:/data
+    networks:
+      - brainroot_network
+
+networks:
+  brainroot_network:
+    driver: bridge

@@ -34,7 +34,7 @@ def init_routes(app):
         # Jeśli użytkownik przesyła formularz z wyborem kategorii
         if request.method == 'POST':
             category_id = request.form['category']
-            selected_category = Category.query.get(category_id)
+            selected_category = db.session.get(Category, category_id)
             session['selected_category_id'] = category_id
             return render_template('manager.html', selected_category=selected_category,
                                    selected_category_id=category_id, categories=categories)
@@ -63,7 +63,7 @@ def init_routes(app):
         new_word = request.form['new_word']
         new_translation = request.form['new_translation']
         category_id = request.form['category_id']
-        selected_category = Category.query.get(category_id)
+        selected_category = db.session.get(Category, category_id)
 
         word = Word(word=new_word, translation=new_translation, category=selected_category)
 
@@ -77,7 +77,7 @@ def init_routes(app):
         word_id = request.form.get('word_id')  # Używamy .get, aby uniknąć KeyError
 
         if word_id:  # Sprawdzamy, czy word_id jest obecne
-            word_to_delete = Word.query.options(joinedload(Word.category)).get(word_id)
+            word_to_delete = db.session.get(Word, word_id)
 
             if word_to_delete:
                 word_name = word_to_delete.word
@@ -96,7 +96,7 @@ def init_routes(app):
 
         # Przekazujemy kategorie i kategorię do szablonu, by pozostać w tej samej kategorii
         categories = Category.query.all()
-        selected_category = Category.query.get(category_id) if category_id else None
+        selected_category = db.session.get(Category, category_id) if category_id else None
 
         return render_template('manager.html', del_message=del_message,
                                selected_category=selected_category, categories=categories)
