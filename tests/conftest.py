@@ -8,6 +8,7 @@ import pytest
 from app import create_app
 from app.models import db, Word, Category
 
+print(f"Current sys.path: {sys.path}")
 
 @pytest.fixture
 def app():

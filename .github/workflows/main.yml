@@ -29,4 +29,5 @@ jobs:
 
       - name: Uruchomienie testów
         run: |
+          export PYTHONPATH=$(pwd)/app
           pytest tests/
