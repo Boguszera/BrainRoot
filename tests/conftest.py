@@ -2,13 +2,12 @@ import sys
 import os
 
 # dodanie katalogu 'app' do ścieżki importu
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../app')))
+if 'app' not in sys.path:
+    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../app')))
 
 import pytest
 from app import create_app
 from app.models import db, Word, Category
-
-print(f"Current sys.path: {sys.path}")
 
 @pytest.fixture
 def app():
