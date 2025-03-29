@@ -1,8 +1,7 @@
 # BrainRoot
 Interaktywna platforma edukacyjna
 
-![CI](https://img.shields.io/github/workflow/status/boguszera/brainroot/Test-and-Deploy?label=CI)
-![Tests](https://img.shields.io/github/workflow/status/boguszera/brainroot/Test?label=Tests)
+[![Test and Deploy](https://github.com/Boguszera/BrainRoot/actions/workflows/main.yml/badge.svg)](https://github.com/Boguszera/BrainRoot/actions/workflows/main.yml)
 
 ## O projekcie
 **BrainRoot** to aplikacja open-source stworzona w celu szybkiej i efektywnej nauki języków obcych. Aplikacja umożliwia użytkownikom naukę słówek poprzez interaktywne testy, które pomagają w zapamiętywaniu nowych terminów i ich tłumaczeniu. Dzięki prostemu interfejsowi użytkownika i systemowi śledzenia postępów, BrainRoot jest doskonałym narzędziem do codziennej nauki.
