@@ -4,6 +4,7 @@ from .config import Config
 from .models import db, init_db
 from .routes import init_routes
 from app.scripts.seed import seed_data
+from .api import api_bp
 
 def create_app():
     # tworzenie instancji aplikacji
@@ -18,6 +19,9 @@ def create_app():
     # automatyczne dodanie presetów
     with app.app_context():
         seed_data()
+
+    # blueprint registration
+    app.register_blueprint(api.api_bp, url_prefix='/api')
 
     # Zarejestrowanie tras
     init_routes(app)

@@ -18,6 +18,7 @@ Interaktywna platforma edukacyjna
 BrainRoot/
 │
 ├── app/                           # Aplikacja backendowa (logika aplikacji)
+│   ├── api.py                     # REST API
 │   ├── __init__.py                # Inicjalizacja aplikacji
 │   ├── config.py                  # Plik konfiguracyjny aplikacji i bazy danych
 │   ├── models.py                  # Modele bazy danych
@@ -62,6 +63,7 @@ BrainRoot/
 - **SQLite**
 - **Python**
 - **Docker**
+- **REST API**
 
 ## Instalacja aplikacji BrainRoot
 

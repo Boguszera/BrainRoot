@@ -69,3 +69,14 @@ def clean_text(text):
     # funkcja ignorująca wielkość znaków i interpunkcję
 
     return re.sub(r'[^\w\s]', '', text).strip().lower()
+
+def check_answer(user_translation, correct_translation, word):
+    if clean_text(user_translation) == clean_text(correct_translation):
+        good_answer(word)
+        return True, "Gratulacje! Poprawne tłumaczenie."
+    else:
+        return False, f"Zła odpowiedź :( Poprawne tłumaczenie to: {correct_translation}."
+
+
+def handle_unknown_answer(correct_translation):
+    return f"Poprawne tłumaczenie to: {correct_translation}"
